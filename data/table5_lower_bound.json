@@ -1,0 +1,42 @@
+[
+  {
+    "n": 2,
+    "dim": 3,
+    "eps": 0.7064,
+    "patrones_probados": 8,
+    "exhaustivo": true,
+    "precision_minima_necesaria": 2
+  },
+  {
+    "n": 3,
+    "dim": 8,
+    "eps": 0.4078,
+    "patrones_probados": 256,
+    "exhaustivo": true,
+    "precision_minima_necesaria": 4
+  },
+  {
+    "n": 4,
+    "dim": 15,
+    "eps": 0.2884,
+    "patrones_probados": 32768,
+    "exhaustivo": true,
+    "precision_minima_necesaria": 4
+  },
+  {
+    "n": 5,
+    "dim": 24,
+    "eps": 0.2234,
+    "patrones_probados": 300,
+    "exhaustivo": false,
+    "precision_minima_necesaria": 5
+  },
+  {
+    "n": 6,
+    "dim": 35,
+    "eps": 0.1824,
+    "patrones_probados": 300,
+    "exhaustivo": false,
+    "precision_minima_necesaria": 5
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "n": 2,
+    "words_tested": 23,
+    "max_prec_orig": 80,
+    "max_prec_ref": 80,
+    "max_rounds_orig": 3,
+    "max_rounds_ref": 3,
+    "mean_prec_orig": 51.3,
+    "mean_prec_ref": 40.9,
+    "mismatches": 0
+  },
+  {
+    "n": 3,
+    "words_tested": 23,
+    "max_prec_orig": 160,
+    "max_prec_ref": 80,
+    "max_rounds_orig": 4,
+    "max_rounds_ref": 3,
+    "mean_prec_orig": 54.8,
+    "mean_prec_ref": 47.8,
+    "mismatches": 0
+  },
+  {
+    "n": 4,
+    "words_tested": 23,
+    "max_prec_orig": 160,
+    "max_prec_ref": 80,
+    "max_rounds_orig": 4,
+    "max_rounds_ref": 3,
+    "mean_prec_orig": 80.0,
+    "mean_prec_ref": 51.3,
+    "mismatches": 0
+  },
+  {
+    "n": 5,
+    "words_tested": 23,
+    "max_prec_orig": 160,
+    "max_prec_ref": 80,
+    "max_rounds_orig": 4,
+    "max_rounds_ref": 3,
+    "mean_prec_orig": 80.0,
+    "mean_prec_ref": 51.3,
+    "mismatches": 0
+  }
+]
