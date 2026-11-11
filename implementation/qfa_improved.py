@@ -1,4 +1,9 @@
 """
+NOTA (2026-11): este modulo implementa una normalizacion GFA->PFA de tipo clasico/Turakainen
+con 2k+6 estados (B_sigma + C*J). NO es la construccion de la version actual del articulo de
+Chen y Wu (arXiv:2604.07058), que usa n^2+1 estados y esta en qfa_n2plus1.py. Se conserva
+como linea base de comparacion (Tabla 2 del informe). Las precisiones de intervalos se miden en BITS.
+
 Extensión de qfa_simulation.py: variantes de la construcción del Teorema 3.2
 (Chen & Wu, arXiv:2604.07058) que buscan minimizar la constante de
 normalización C sin alterar la cota de 2k+6 estados.

@@ -1,4 +1,9 @@
 """
+NOTA (2026-11): este modulo implementa una normalizacion GFA->PFA de tipo clasico/Turakainen
+con 2k+6 estados (B_sigma + C*J). NO es la construccion de la version actual del articulo de
+Chen y Wu (arXiv:2604.07058), que usa n^2+1 estados y esta en qfa_n2plus1.py. Se conserva
+como linea base de comparacion (Tabla 2 del informe). Las precisiones de intervalos se miden en BITS.
+
 Implementación de la construcción de:
 Zeyu Chen y Junde Wu, "The Quadratic State Cost of Classical Simulation of
 One-Way Quantum Finite Automata", arXiv:2604.07058 (2026).

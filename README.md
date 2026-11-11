@@ -1,101 +1,58 @@
-# Implementación y experimentos: simulación probabilística exacta de autómatas cuánticos finitos
+# Exact probabilistic simulation of 1gQFAs: implementation and experiments
 
-Este paquete contiene la implementación completa y los scripts de experimentación
-usados para el informe "Simulación Probabilística Exacta de Autómatas Cuánticos
-Finitos" (implementación de la construcción de Chen y Wu, arXiv:2604.07058).
+Code, data and figures for the technical report *Exact Probabilistic Simulation of Quantum Finite
+Automata: implementation, verification, and numerical analysis of the n²+1 construction of Chen and Wu*.
 
-## Requisitos
+The report studies the construction of Chen and Wu, *The State Cost of Classical Simulation of
+One-Way General Quantum Finite Automata*, arXiv:2604.07058 (current version): every n-state 1gQFA
+is simulated exactly, under strict cutpoint, by a PFA with n²+1 states (Proposition 3.1 and
+Theorem 3.2 of that paper), with the identity
 
-```
-pip install numpy mpmath --break-system-packages
-```
+    f_P(w) - 1/(n²+1) = δ · ε^|w| · (f_Q(w) - λ).
 
-Todo el código usa solo `numpy` (álgebra lineal en punto flotante) y `mpmath`
-(precisión arbitraria e intervalos, vía `mpmath.iv`). No se requieren otras
-dependencias.
+## Layout
 
-## Estructura
+| Path | Content |
+|---|---|
+| `implementation/qfa_n2plus1.py` | **Main module.** n²+1 construction, generic over float64 / mpmath / interval backends; orthogonal and naive choices of the isomorphism T; tight and per-symbol ε |
+| `implementation/qfa_simulation.py` | Random 1gQFAs (Stinespring), Hilbert–Schmidt linearization (GFA), direct simulation |
+| `implementation/qfa_interval.py` | Interval-arithmetic building blocks (basis, channels, GFA in `mpmath.iv`) |
+| `implementation/qfa_lower_bound.py` | Dimension-counting separation identity (supplementary, our own argument) |
+| `implementation/qfa_improved.py` | Legacy: refinements of a classical-style 2k+6 normalization (comparison baseline) |
+| `experiments/generate_n2plus1_tables.py` | Tables 1–3 of the report |
+| `experiments/run_n2plus1_interval.py` | Table 4 (interval certification, precision in bits) |
+| `experiments/check_universal_bound.py` | Numerical check of κ ≤ √n (Proposition 3) |
+| `experiments/generate_table5.py` | Table 5 (separation identity) |
+| `experiments/make_n2plus1_figures.py` | Figures 1–3 |
+| `experiments/generate_table1_table2.py`, `generate_table3.py`, `run_interval_experiment.py` | Legacy experiments for the 2k+6 baseline (Table 2, last column) |
+| `data/` | JSON outputs (`*_n2plus1*.json` are the current ones) |
+| `figures/` | PNG figures (`n2plus1_*_en.png` are the current ones) |
 
-```
-implementation/     -- Los cuatro módulos centrales (importables)
-experiments/         -- Scripts que ejecutan los experimentos y generan las tablas
-data/                -- Resultados ya calculados, en formato JSON (para no re-ejecutar todo)
-figures/             -- Las figuras generadas (PNG)
-```
+## Requirements
 
-### `implementation/qfa_simulation.py`
-El módulo central. Implementa:
-- La base ortonormal de operadores Hermitianos (Sección 5.2 del informe).
-- Un 1gQFA aleatorio vía el método de dilatación de Stinespring (canales CPTP
-  garantizados).
-- La Proposición 3.1 de Chen y Wu (2026): linealización 1gQFA → GFA.
-- El Teorema 3.2 de Chen y Wu (2026): construcción GFA → PFA, en tres variantes
-  aritméticas: punto flotante (`gfa_to_pfa`), precisión arbitraria fija
-  (`gfa_to_pfa_hp`, clase `PFA_HP`), y las clases `OneWayGeneralQFA`, `GFA`, `PFA`.
-- `run_experiment(n, lam, ...)`: corre la batería completa de verificación
-  para un valor de n y cutpoint dados, y devuelve todos los conteos de estados
-  y discrepancias (usado para la Tabla 1).
+    pip install numpy mpmath matplotlib
 
-### `implementation/qfa_improved.py`
-Las dos Proposiciones de refinamiento (Sección 3 del informe):
-- **Proposición 1** (cota ajustada): usa `tight_bound=True`.
-- **Proposición 2** (normalización por símbolo): usa `per_symbol_C=True`.
-- `gfa_to_pfa_improved(...)`: construcción refinada en punto flotante.
-- `gfa_to_pfa_improved_hp(...)`: la misma construcción en precisión arbitraria.
+## Reproducing the tables
 
-### `implementation/qfa_interval.py`
-La certificación por intervalos (Sección 4 del informe, Proposición 3):
-- Base de Hermitianos, canales y GFA reconstruidos enteramente en
-  `mpmath.iv` (aritmética de intervalos con redondeo dirigido).
-- `gfa_to_pfa_iv(...)`: construcción del Teorema 3.2 (con los refinamientos)
-  en intervalos.
-- `certify_word(...)`: el procedimiento de duplicación adaptativa de precisión
-  que certifica la decisión de cutpoint con una garantía matemática incondicional.
+Fixed seeds `default_rng(100 + n)`, λ = 0.45, alphabet {a, b}.
 
-### `implementation/qfa_lower_bound.py`
-La extensión a la cota inferior (Sección 2.4 / 6.6 del informe, Teorema 4.1
-de Chen y Wu):
-- Base ortonormal del subespacio de operadores Hermitianos de traza nula.
-- Los estados "preparados" ρ_j y las mediciones M_s del argumento de shattering.
-- `max_valid_epsilon(...)`: el margen ε máximo válido (positividad semidefinida).
-- `certify_shattering(...)`: certificación por intervalos de la identidad
-  Tr(M_s·ρ_j) = ε·s_j para todos los patrones de signo.
+    cd experiments
+    python3 generate_n2plus1_tables.py     # Tables 1-3 (about 1 minute)
+    python3 run_n2plus1_interval.py        # Table 4 (about 30 seconds)
+    python3 check_universal_bound.py       # κ <= sqrt(n) over 300 random automata per n
+    python3 make_n2plus1_figures.py        # Figures 1-3
 
-## Cómo reproducir cada tabla del informe
+Float64 failures at other cutpoints (n = 6, words up to length 5, refined 2k+6 baseline not used):
 
-```bash
-cd experiments/
+    cd implementation
+    python3 -c "
+    from qfa_simulation import run_experiment
+    for lam in (0.3, 0.45, 0.5, 0.7):
+        r = run_experiment(n=6, lam=lam, max_word_len=5, seed=106, hp_dps=100)
+        print(lam, len(r['double_precision_mismatches']), '/', r['num_words_tested'])"
 
-# Tabla 1 (verificación de estados) y Tabla 2 (constantes C, N)
-python3 generate_table1_table2.py
+(That last command exercises the legacy 2k+6 baseline: 48/63, 26/63, 16/63, 20/63 for λ = 0.3, 0.45, 0.5, 0.7.)
 
-# Tabla 3 (comparación construcción original vs. refinada)
-python3 generate_table3.py
+## Note on units
 
-# Tabla 4 (certificación por intervalos) -- tarda varios minutos
-python3 run_interval_experiment.py
-
-# Tabla 5 (certificación de la cota inferior) -- el caso n=4 exhaustivo
-# (32768 patrones) toma ~90 segundos
-python3 generate_table5.py
-
-# Figuras 1 y 2 (requieren matplotlib: pip install matplotlib --break-system-packages)
-python3 make_figure.py    # Figura 1: crecimiento de estados
-python3 make_figure2.py   # Figura 2: decaimiento de la señal de cutpoint
-```
-
-Cada script imprime los resultados y los guarda como JSON en el directorio
-donde se ejecute. Los archivos en `data/` son los resultados ya calculados
-(exactamente los usados en el informe), por si se quiere inspeccionar los
-números sin volver a correr nada.
-
-## Notas de reproducibilidad
-
-- Todos los 1gQFA aleatorios usan semillas fijas (`np.random.default_rng(100+n)`
-  para las Tablas 1–3, `seed=7` o `seed=99` para las Tablas 4–5), por lo que
-  volver a ejecutar los scripts debe reproducir exactamente los mismos números.
-- `run_interval_experiment.py` y `generate_table5.py` son los más lentos
-  (varios minutos en total), porque la aritmética de intervalos en Python puro
-  (sin aceleración numérica de bajo nivel) es más costosa que `numpy`.
-- El caso exhaustivo de n=4 en la Tabla 5 (32768 patrones de signo) es el
-  paso individual más lento (~90 segundos).
+Interval precision is `mpmath.iv.prec`, which is measured in **bits** (not decimal digits).

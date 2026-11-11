@@ -1,4 +1,9 @@
 """
+NOTA (2026-11): este modulo implementa una normalizacion GFA->PFA de tipo clasico/Turakainen
+con 2k+6 estados (B_sigma + C*J). NO es la construccion de la version actual del articulo de
+Chen y Wu (arXiv:2604.07058), que usa n^2+1 estados y esta en qfa_n2plus1.py. Se conserva
+como linea base de comparacion (Tabla 2 del informe). Las precisiones de intervalos se miden en BITS.
+
 Certificacion del cutpoint de un 1gQFA mediante aritmetica de intervalos con
 PRECISION ADAPTATIVA, en vez de fijar de antemano un numero de digitos
 decimales "suficiente" (como se hizo en qfa_simulation.py y qfa_improved.py
